@@ -110,7 +110,7 @@ RaspberryPi,バッテリーの固定にはABS樹脂板で専用の取付板を�
 このアームをMCナイロンのブロックに穴を開けて半分に切断したもので上下から挟み固定している.
 製作した3号機を図\ref{fig:drone-3-1}に示す.
 この機体では2号機に比べアームの強度は向上したものの,重量が80g増加してしまった.
-また,CFRPのパイプが高価であることやCFRPの加工が困難であること,パイプが固定し難いことが問題となった.
+また,CFRPのパイプが高価であることやCFRPの加工が容易でないこと,パイプが固定し難いことが問題となった.
 
 \begin{figure}[htbp]
 	\begin{center}
@@ -123,7 +123,8 @@ RaspberryPi,バッテリーの固定にはABS樹脂板で専用の取付板を�
 \subsubsection{3号機改}
 3号機を軽量化するため,アームの固定に使用するパーツに変更を加えた.
 厚さ3mmの木の板のパーツと15mm×15mm,厚さ1.5mmのアルミ角管を用いてアームの固定を行う.
-この改善により70gの軽量化を達成した.
+また,木材を使用していためあるアルミ製アームのように塑性変形が発生せず,より安価である.
+さらにこの改善により70gの軽量化を達成した.
 製作した3号機改を図\ref{fig:drone-3-2}に示す.
 
 \begin{figure}[htbp]
@@ -211,7 +212,7 @@ RaspberryPi,バッテリーの固定にはABS樹脂板で専用の取付板を�
 
 現在のマルチコプターの総重量は717gである.
 後述の推力特性の確認実験から4つのモータ,プロペラにより発生する推力は最大で1099gであることがわかっている.
-機体の姿勢制御を行うことを考慮すると,総重量を最大推力の？割以下にしたいと考える. %何割にしましょうか
+機体の姿勢制御を行うことを考慮すると,総重量を最大推力の8割以下にしたいと考える. %何割にしましょうか
 
 
 \chapter{ソフトウェア}
@@ -298,7 +299,50 @@ PID制御は目標値と現在の値の差に比例,積分,微分をそれぞれ
 運動方程式には航空機の運動方程式を利用する.
 前提条件として,左右対称,前後非対称,上下非対称,傾きが微小であることなどがある.
 この方程式をルンゲ・クッタ法を用いて解く.
-ルンゲ・クッタ法とは,数値解析において微分方程式の初期値問題に対して近似解を与える一連の方法である.\cite{runge} %wikiのコピペなう
+ルンゲ・クッタ法とは微分方程式を数値的に解く方法である.以下に実際に使用するルンゲ・クッタ法で代表的なルンゲ・クッタの公式を示す.
+
+\begin{equation}
+	x_k+1 = x_k+\frac{1}{6}h(k_1+2k_2+2k_3+k_4)
+	\label{eq1}
+\end{equation}
+
+\begin{equation}
+	k_1 = f(x_k,t_k)
+	\label{eq2}
+\end{equation}
+
+\begin{equation}
+	k_2 = f(x_k+\frac{hk_1}{2},t_k+\frac{h}{2})
+	\label{eq3}
+\end{equation}
+
+\begin{equation}
+	k_3 = f(x_k+\frac{hk_2}{2},t_k+\frac{h}{2})
+	\label{eq4}
+\end{equation}
+
+\begin{equation}
+	k_4 = f(x_k+hk_3,t_k+h)
+	\label{eq5}
+\end{equation}
+
+この公式の特徴は,独立変数tが, \(t_k\) , \(t_k+2h\) , \(t_k+2h\) , \(t_k+h\) と単調に増加していることである.したがって,変数tに \(t=t_k\) と入れたらt=t+h/2 , t=t+h/2と2回代入文を繰り返してtを増加させれば,手順の終了時には, \(t=t_k+1\) となっている.
+
+
+未知関数xの値も, \(t_k\) (t= \(t_k\)の値)から始まって
+
+\(k_1\)を求めて　\(x_k+\frac{1}{6}hk_1\)　　　　　　　　　　　　　x=x+1/6k
+
+
+\(k_2\)を求めて　\(x_k+\frac{1}{6}hk_1+\frac{1}{3}hk_2\)　　　　　　　　　　　x=x+1/3k
+
+
+\(k_3\)を求めて　\(x_k+\frac{1}{6}hk_1+\frac{1}{3}hk_2+\frac{1}{3}hk_3\)　　　　　　　　　x=x+1/3k
+
+
+\(k_4\)を求めて　\(x_k+\frac{1}{6}hk_1+\frac{1}{3}hk_2+\frac{1}{3}hk_3+\frac{1}{6}hk_4\)　　　　　　　x=x+1/6k
+
+のようにxの値をふやしていくと,最後に得られたxは\(x_k+1\)になっている.\cite{runge} 
 
 \subsection{特性確認}
 前述の運動方程式を解くために必要な値を実験などにより求める必要がある.
@@ -339,8 +383,9 @@ PID制御は目標値と現在の値の差に比例,積分,微分をそれぞれ
 
 \subsubsection{推力特性}
 図\ref{fig:thrust-test}のように,はかりにプロペラを付けたモータを固定した実験装置を製作した.
-この状態でモータに与えるPWM値を0.05[ms]操作し,PWM値と推力の関係を求める.
-実験により得られたグラフからモータの始動から推力の上限に達するまでの範囲を抜き出し,その近似直線をモータの制御式として用いる.
+この状態でモータに与えるPWM値を0.05[ms]ずつ上昇させ,PWM値と推力の関係を求める.
+後記に記載する最適レギュレータは制御則が線形である必要がある.
+そのため実験により得られたグラフからモータの始動から推力の上限に達するまでの範囲を抜き出し,その近似直線をモータの制御式として用いる.
 例としてRモータのPWM値と推力の関係を表したものを図\ref{fig:thrust-R}に,その近似直線を表したものを図\ref{fig:thrust-R-kinji}に示す.
 
 \begin{figure}[htbp]
@@ -369,8 +414,17 @@ PID制御は目標値と現在の値の差に比例,積分,微分をそれぞれ
 
 \subsubsection{モーメント特性}
 図\ref{fig:moment-test}のように,マルチコプターに回転軸を取り付けて吊るした.
-この状態で1つのモータのPWM値を操作し,機体が1回転するのにかかる時間を計測する.
-実験により得られたグラフから機体が回転し始める点から最短時間で1回転する点までを抜き出し,その近似直線をモータの制御式として用いる.
+この状態で1つのモータで機体が1回転するのにかかる時間を計測する.
+こちらも最適レギュレータ使用するので制御則を線形にする.
+実験により得られたグラフから機体が1回転する時の時間と◯◯を式(\ref{eq6})に代入し,その近似直線をモータの制御式として用いる.
+
+\begin{equation}
+	N = \frac{4J\pi}{t^2}
+	\label{eq6}
+\end{equation}
+ 
+
+
 例としてRモータを回した時の機体が1回転するのにかかる時間を計測したものを図\ref{fig:moment-time-R}に示す.
 またモーメントを算出し,PWM値とモーメントの関係とその近似直線を表したものを図\ref{fig:moment-R}に示す.
 
@@ -390,7 +444,6 @@ PID制御は目標値と現在の値の差に比例,積分,微分をそれぞれ
 	\end{center}
 \end{figure}
 
-%モーメントに直したものに差し替える必要有
 \begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=75mm]{image/moment/moment-R.eps}
@@ -398,6 +451,35 @@ PID制御は目標値と現在の値の差に比例,積分,微分をそれぞれ
 		\label{fig:moment-R}
 	\end{center}
 \end{figure}
+
+\subsection{ルンゲ・クッタ法を用いた機体のシュミレーション}
+上記の実験でルンゲ・クッタ法を解くのに必要な物理情報がまとまったので,ルンゲ・クッタ法を用いて機体のシュミレーションを行った.
+以下の表\ref{table:syumi}の条件でシュミレーションを行った.
+
+\begin{table}[htbp]
+	\begin{center}
+		\caption{シュミレーションの条件}
+		\begin{tabular}{|l|l|} \hline
+			機体の各変位 & すべて静止の状態と考え0 \\ \hline 
+			各種固有値 & 実際の数値を使用 \\ \hline
+			モータの状態 & 全てに同じだけの推力を発生 \\ \hline
+		\end{tabular}
+		\label{table:syumi}
+	\end{center}
+\end{table}
+
+XYZ方向の移動量のシュミレーション結果を図\ref{fig:UVW}に示す.
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=75mm]{image/UVW.eps}
+		\caption{各方向の移動量}
+		\label{fig:UVW}
+	\end{center}
+\end{figure}
+
+図\ref{fig:UVW}より,すべてのモータに等しい推力を与えた場合Z方向の移動量だけが増加した.
+このように機体の条件を入力することにより機体の動きをシュミレーションすることができる.このシュミレーションと実際の制御時のグラフが正しいかどうかで制御がうまくいっているか確認できる.
 
 \subsection{校正}
 制御を正確なものにするため各センサに校正を行った.
@@ -451,7 +533,24 @@ z軸について,校正前のデータを図\ref{fig:acc-calib-be}に,校正後�
 以上の結果を用い,最適レギュレータを設計する.
 
 \subsection{最適レギュレータについて}
-解いた運動方程式を線形化し…
+%解いた運動方程式を線形化し,その線形化したモデルに最適レギュレータを設計した.
+%最適レギュレータはセンサから得られた機体の各変位量を常にフィードバックし,その変位量が0になるよう制御して機体の状態を安定させる制御器である.
+
+最適レギュレータとは,評価関数を設け,それを最小とするように状態フィードバックによる最適制御入力を決定する設計法について以下に述べる.可制御で線形な時不定システムの式(\ref{eq7})
+
+\begin{equation}
+	\dot{x}(t) = Ax(t)+Bu(t)
+	\label{eq7}
+\end{equation}
+
+のもとで,ある評価関数を最小にする制御則が線形な状態フィードバック制御則となるため,評価関数は評価関数を以下の２次形式の式(\ref{eq8})にする必要がある.
+
+\begin{equation}
+	J = \int^{t_f}_0 [x^T(t)Qx(t)+u^T(t)Ru(t)]dt
+	\label{eq8}
+\end{equation}
+
+ここで,制御目的の重み行列Q(n×n)は非負定な対称行列,制御入力の重み行列R(m×m)は正定対称行列とする.\cite{regyu}
 
 \subsection{最適レギュレータの結果}
 最適レギュレータにより,球体カバーを取り付けた状態での離陸が可能となった.
@@ -508,13 +607,11 @@ sudo raspi-config
 \section{Emlid}
 
 \subsection{emlid-raspbian}
-前述の通りGUIは使用できない.
-
+前述の通りGUIを使用することができない.
 https://docs.emlid.com/navio2/Navio-APM/configuring-raspberry-pi/
 
 \subsection{Navio2サンプルプログラム}
 EmlidがNavio2のセンサ情報取得のサンプルプログラムをGitHub上で公開している.
-
 https://github.com/emlid/Navio2.git
 
 \section{DUALSHOCK3の使用}
@@ -523,42 +620,28 @@ RaspberryPi3ではオンボード上にBluetoothモジュールが搭載され�
 
 \subsection{bluez}
 wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.37.tar.xz
-
 tar xvf bluez-5.37.tar.xz
-
 cd bluez-5.37/
-
 sudo apt-get install -y libusb-dev libdbus-1-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev
-
 ./configure
-
 make
-
 sudo make install
-
 sudo ldconfig
 
 \subsection{sixpair}
 wget http://www.pabr.org/sixlinux/sixpair.c
-
 gcc -o sixpair sixpair.c -lusb
 
 \subsection{QtSixA}
 wget http://sourceforge.net/projects/qtsixa/files/QtSixA%201.5.1/QtSixA-1.5.1-src.tar.gz
-
 tar xfvz QtSixA-1.5.1-src.tar.gz
-
 cd QtSixA-1.5.1/sixad
-
 make
-
 sudo mkdir -p /var/lib/sixad/profiles
-
 sudo checkinstall
 
 \subsection{接続方法}
 sudo hciconfig hci0 piscan
-
 %sudo sixad -s &
 
 \section{ソースコード}
