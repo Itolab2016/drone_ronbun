@@ -592,58 +592,6 @@ dxf形式のデータやpng,jpgなどの画像も読み込むことができる.
 この値は材質によって異なる.
 基準値は説明書に記載されているが,実際に切ってみて調整を行うほうが良い.
 
-\section{RaspberryPi}
-本研究ではRaspberryPiを使用しているが,OSには専用のRaspbianやNOOBSではなく後述のemlid-raspbianを使用している.
-そのためGUIは使用できない.
-
-\subsection{初期設定}
-sudo raspi-config
-メモリ解放
-自動ログイン
-キーボード設定
-
-ネットワーク接続設定
-
-\section{Emlid}
-
-\subsection{emlid-raspbian}
-前述の通りGUIを使用することができない.
-https://docs.emlid.com/navio2/Navio-APM/configuring-raspberry-pi/
-
-\subsection{Navio2サンプルプログラム}
-EmlidがNavio2のセンサ情報取得のサンプルプログラムをGitHub上で公開している.
-https://github.com/emlid/Navio2.git
-
-\section{DUALSHOCK3の使用}
-DUALSHOCK3とのBluetooth通信にあたり,BluetoothドングルをRaspberryPiに接続する.
-RaspberryPi3ではオンボード上にBluetoothモジュールが搭載されているが,emlid-raspbianでは設定が複雑になっているよう.
-
-\subsection{bluez}
-wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.37.tar.xz
-tar xvf bluez-5.37.tar.xz
-cd bluez-5.37/
-sudo apt-get install -y libusb-dev libdbus-1-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev
-./configure
-make
-sudo make install
-sudo ldconfig
-
-\subsection{sixpair}
-wget http://www.pabr.org/sixlinux/sixpair.c
-gcc -o sixpair sixpair.c -lusb
-
-\subsection{QtSixA}
-wget http://sourceforge.net/projects/qtsixa/files/QtSixA%201.5.1/QtSixA-1.5.1-src.tar.gz
-tar xfvz QtSixA-1.5.1-src.tar.gz
-cd QtSixA-1.5.1/sixad
-make
-sudo mkdir -p /var/lib/sixad/profiles
-sudo checkinstall
-
-\subsection{接続方法}
-sudo hciconfig hci0 piscan
-%sudo sixad -s &
-
 \section{ソースコード}
 実際に使用したソースコードを以下に示す.
 
