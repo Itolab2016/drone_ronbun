@@ -35,8 +35,8 @@
 \contentsline {subsection}{\numberline {3.8.3}校正}{21}
 \contentsline {subsubsection}{加速度センサ}{21}
 \contentsline {subsubsection}{地磁気センサ}{21}
-\contentsline {section}{\numberline {3.9}最適レギュレータ}{23}
-\contentsline {subsection}{\numberline {3.9.1}最適レギュレータについて}{23}
+\contentsline {section}{\numberline {3.9}最適レギュレータ}{22}
+\contentsline {subsection}{\numberline {3.9.1}最適レギュレータについて}{22}
 \contentsline {subsection}{\numberline {3.9.2}最適レギュレータの結果}{24}
 \contentsline {chapter}{\numberline {第4章}おわりに}{25}
 \contentsline {section}{\numberline {4.1}結論}{25}
@@ -49,8 +49,8 @@
 \contentsline {chapter}{謝辞}{28}
 \contentsline {chapter}{参考文献}{29}
 \contentsline {section}{\numberline {A}レーザー加工機}{30}
-\contentsline {subsection}{\numberline {A.\ 1}材料}{30}
-\contentsline {subsection}{\numberline {A.\ 1}加工データ}{31}
-\contentsline {subsection}{\numberline {A.\ 1}加工時の設定}{31}
+\contentsline {subsection}{\numberline {A．\ 1}材料}{30}
+\contentsline {subsection}{\numberline {A．\ 1}加工データ}{31}
+\contentsline {subsection}{\numberline {A．\ 1}加工時の設定}{31}
 \contentsline {section}{\numberline {A}機体の製作方法}{31}
 \contentsline {section}{\numberline {A}ソースコード}{35}
